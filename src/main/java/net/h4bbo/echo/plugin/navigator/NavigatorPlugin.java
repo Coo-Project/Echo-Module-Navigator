@@ -8,6 +8,7 @@ import net.h4bbo.echo.api.plugin.JavaPlugin;
 import net.h4bbo.echo.api.services.navigator.INavigatorService;
 import net.h4bbo.echo.api.services.room.IRoomService;
 import net.h4bbo.echo.plugin.navigator.messages.navigator.NavigateMessageEvent;
+import net.h4bbo.echo.plugin.navigator.messages.navigator.SearchFlatsMessageEvent;
 import net.h4bbo.echo.plugin.navigator.messages.navigator.UserFlatsMessageEvent;
 import net.h4bbo.echo.plugin.navigator.messages.user.GetCreditsMessageEvent;
 import net.h4bbo.echo.plugin.navigator.messages.user.UserInfoMessageEvent;
@@ -28,7 +29,6 @@ public class NavigatorPlugin extends JavaPlugin {
 
     @Override
     public void load() {
-        // this.getLogger().info("Loaded {} navigator categories", this.navigatorCategories.size());
         this.getEventManager().register(this, this);
     }
 
@@ -47,6 +47,7 @@ public class NavigatorPlugin extends JavaPlugin {
         messageHandler.register(this, GetCreditsMessageEvent.class);
         messageHandler.register(this, NavigateMessageEvent.class);
         messageHandler.register(this, UserFlatsMessageEvent.class);
+        messageHandler.register(this, SearchFlatsMessageEvent.class);
     }
 
     @EventHandler
@@ -87,6 +88,12 @@ public class NavigatorPlugin extends JavaPlugin {
         return this.getServices()
                 .getRequiredService(IRoomService.class)
                 .getRoomsByUserId(userId);
+    }
+
+    public List<RoomData> searchRooms(String queryString) {
+        return this.getServices()
+                .getRequiredService(IRoomService.class)
+                .search(queryString);
     }
 
     public boolean isPublicRoomCategory(int categoryId) {
