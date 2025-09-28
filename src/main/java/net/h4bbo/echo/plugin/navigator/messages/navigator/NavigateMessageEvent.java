@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NavigateMessageEvent extends MessageEvent {
+public class NavigateMessageEvent extends MessageEvent<NavigatorPlugin> {
     @Override
     public int getHeaderId() {
         return 150;
@@ -22,12 +22,11 @@ public class NavigateMessageEvent extends MessageEvent {
     @Override
     public void handle(IPlayer player, IClientCodec msg) {
         var playerData = player.attr(UserData.DATA_KEY).get();
-        var plugin = (NavigatorPlugin) this.getPlugin();
 
         boolean hideFulLRooms = msg.pop(DataCodec.BOOL, Boolean.class);
         int categoryId = msg.pop(DataCodec.VL64_INT, Integer.class);
 
-        var navigatorCategoryOpt = plugin.getNavigatorCategories().stream()
+        var navigatorCategoryOpt = this.getPlugin().getNavigatorCategories().stream()
                 .filter(x -> x.getId() == categoryId)
                 .findFirst();
 
@@ -41,8 +40,8 @@ public class NavigateMessageEvent extends MessageEvent {
             return;
         }
 
-        List<RoomData> roomList = plugin.getRoomsByCategory(navigatorCategory.getId());
-        var isPublicRoomCategory = plugin.isPublicRoomCategory(navigatorCategory.getId());
+        List<RoomData> roomList = this.getPlugin().getRoomsByCategory(navigatorCategory.getId());
+        var isPublicRoomCategory = this.getPlugin().isPublicRoomCategory(navigatorCategory.getId());
 
         var codec = PacketCodec.create(220)
                 .append(DataCodec.BOOL, hideFulLRooms)
@@ -93,7 +92,7 @@ public class NavigateMessageEvent extends MessageEvent {
             }
         }
 
-        var subCategories = plugin.getNavigatorCategories().stream()
+        var subCategories = this.getPlugin().getNavigatorCategories().stream()
                 .filter(x -> x.getParentId() == navigatorCategory.getId() &&
                         playerData.getRank() >= x.getRankId())
                 .toList();

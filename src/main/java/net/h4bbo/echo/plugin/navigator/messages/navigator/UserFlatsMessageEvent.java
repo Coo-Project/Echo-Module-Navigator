@@ -12,7 +12,7 @@ import net.h4bbo.echo.storage.models.user.UserData;
 import java.sql.SQLException;
 import java.util.List;
 
-public class UserFlatsMessageEvent extends MessageEvent {
+public class UserFlatsMessageEvent extends MessageEvent<NavigatorPlugin> {
     @Override
     public int getHeaderId() {
         return 16;
@@ -21,9 +21,8 @@ public class UserFlatsMessageEvent extends MessageEvent {
     @Override
     public void handle(IPlayer player, IClientCodec msg) {
         var playerData = player.attr(UserData.DATA_KEY).get();
-        var plugin = (NavigatorPlugin) this.getPlugin();
 
-        List<RoomData> roomList = plugin.getRoomsByUserId(playerData.getId());
+        List<RoomData> roomList = this.getPlugin().getRoomsByUserId(playerData.getId());
 
         if (roomList.isEmpty()) {
             PacketCodec.create(57)
