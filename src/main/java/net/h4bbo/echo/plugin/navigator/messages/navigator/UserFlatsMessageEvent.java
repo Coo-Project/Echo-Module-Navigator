@@ -22,7 +22,7 @@ public class UserFlatsMessageEvent extends MessageEvent<NavigatorPlugin> {
     public void handle(IPlayer player, IClientCodec msg) {
         var playerData = player.attr(UserData.DATA_KEY).get();
 
-        List<RoomData> roomList = this.getPlugin().getRoomsByUserId(playerData.getId());
+        List<RoomData> roomList = this.getPlugin().getNavigatorManager().getRoomsByUserId(playerData.getId());
 
         if (roomList.isEmpty()) {
             PacketCodec.create(57)

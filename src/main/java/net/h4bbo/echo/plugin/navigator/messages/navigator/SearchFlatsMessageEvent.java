@@ -22,7 +22,7 @@ public class SearchFlatsMessageEvent extends MessageEvent<NavigatorPlugin> {
         var playerData = player.attr(UserData.DATA_KEY).get();
         var stringQuery = msg.pop(DataCodec.STRING, String.class);
 
-        List<RoomData> roomList = this.getPlugin().searchRooms(stringQuery);
+        List<RoomData> roomList = this.getPlugin().getNavigatorManager().searchRooms(stringQuery);
 
         if (roomList.isEmpty()) {
             PacketCodec.create(58)

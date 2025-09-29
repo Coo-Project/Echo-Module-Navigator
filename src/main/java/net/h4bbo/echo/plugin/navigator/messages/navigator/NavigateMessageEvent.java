@@ -26,7 +26,7 @@ public class NavigateMessageEvent extends MessageEvent<NavigatorPlugin> {
         boolean hideFulLRooms = msg.pop(DataCodec.BOOL, Boolean.class);
         int categoryId = msg.pop(DataCodec.VL64_INT, Integer.class);
 
-        var navigatorCategoryOpt = this.getPlugin().getNavigatorCategories().stream()
+        var navigatorCategoryOpt = this.getPlugin().getNavigatorManager().getNavigatorCategories().stream()
                 .filter(x -> x.getId() == categoryId)
                 .findFirst();
 
@@ -40,8 +40,8 @@ public class NavigateMessageEvent extends MessageEvent<NavigatorPlugin> {
             return;
         }
 
-        List<RoomData> roomList = this.getPlugin().getRoomsByCategory(navigatorCategory.getId());
-        var isPublicRoomCategory = this.getPlugin().isPublicRoomCategory(navigatorCategory.getId());
+        List<RoomData> roomList = this.getPlugin().getNavigatorManager().getRoomsByCategory(navigatorCategory.getId());
+        var isPublicRoomCategory = this.getPlugin().getNavigatorManager().isPublicRoomCategory(navigatorCategory.getId());
 
         var codec = PacketCodec.create(220)
                 .append(DataCodec.BOOL, hideFulLRooms)
@@ -92,7 +92,7 @@ public class NavigateMessageEvent extends MessageEvent<NavigatorPlugin> {
             }
         }
 
-        var subCategories = this.getPlugin().getNavigatorCategories().stream()
+        var subCategories = this.getPlugin().getNavigatorManager().getNavigatorCategories().stream()
                 .filter(x -> x.getParentId() == navigatorCategory.getId() &&
                         playerData.getRank() >= x.getRankId())
                 .toList();

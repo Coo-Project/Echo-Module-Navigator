@@ -22,13 +22,16 @@ import java.util.List;
 
 @DependsOn({"HandshakePlugin", "RoomPlugin"})
 public class NavigatorPlugin extends JavaPlugin {
+    private NavigatorManager navigatorManager;
+
     @Override
     public void assignServices(ServiceCollection services) {
-        services.addSingleton(INavigatorService.class, NavigatorService.class);
+        services.addTransient(INavigatorService.class, NavigatorService.class);
     }
 
     @Override
     public void load() {
+        this.navigatorManager = this.getServices().createInstance(NavigatorManager.class);
         this.getEventManager().register(this, this);
     }
 
@@ -55,54 +58,7 @@ public class NavigatorPlugin extends JavaPlugin {
         this.getLogger().info("{} has disconnected!", event.getPlayer());
     }
 
-    public NavigatorCategoryData getTopParentCategory(int categoryId) {
-        NavigatorCategoryData current = this.getNavigatorCategories()
-                .stream()
-                .filter(c -> c.getId() == categoryId)
-                .findFirst()
-                .orElse(null);
-
-        while (current != null && current.getParentId() != 0) {
-            int parentId = current.getParentId();
-            current = this.getNavigatorCategories().stream()
-                    .filter(c -> c.getId() == parentId)
-                    .findFirst()
-                    .orElse(null);
-        }
-        return current; // This is the top-most parent (or null if not found)
-    }
-
-    public List<NavigatorCategoryData> getNavigatorCategories() {
-        return this.getServices()
-                .getRequiredService(INavigatorService.class)
-                .getCategories();
-    }
-
-    public List<RoomData> getRoomsByCategory(int categoryId) {
-        return this.getServices()
-                .getRequiredService(IRoomService.class)
-                .getRoomsByCategory(categoryId);
-    }
-
-    public List<RoomData> getRoomsByUserId(int userId) {
-        return this.getServices()
-                .getRequiredService(IRoomService.class)
-                .getRoomsByUserId(userId);
-    }
-
-    public List<RoomData> searchRooms(String queryString) {
-        return this.getServices()
-                .getRequiredService(IRoomService.class)
-                .search(queryString);
-    }
-
-    public boolean isPublicRoomCategory(int categoryId) {
-        var navigatorCategory = this.getNavigatorCategories().stream().filter(x -> x.getId() == categoryId).findFirst().orElse(null);
-
-        if (navigatorCategory == null) {
-            throw new NullPointerException("Category " + categoryId + " does not exist");
-        }
-
-        return this.getTopParentCategory(navigatorCategory.getId()).getId() == 3;
+    public NavigatorManager getNavigatorManager() {
+        return navigatorManager;
     }
 }
