@@ -4,6 +4,8 @@ import net.h4bbo.echo.api.game.player.IPlayer;
 import net.h4bbo.echo.api.messages.MessageEvent;
 import net.h4bbo.echo.api.network.codecs.DataCodec;
 import net.h4bbo.echo.api.network.codecs.IClientCodec;
+import net.h4bbo.echo.api.services.navigator.INavigatorService;
+import net.h4bbo.echo.api.services.room.IRoomService;
 import net.h4bbo.echo.codecs.PacketCodec;
 import net.h4bbo.echo.plugin.navigator.NavigatorPlugin;
 import net.h4bbo.echo.storage.models.room.RoomData;
@@ -14,9 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NavigateMessageEvent extends MessageEvent<NavigatorPlugin> {
-    @Override
-    public int getHeaderId() {
-        return 150;
+    private final INavigatorService navigatorService;
+    private final IRoomService roomService;
+
+    public NavigateMessageEvent(INavigatorService navigatorService, IRoomService roomService) {
+        this.navigatorService = navigatorService;
+        this.roomService = roomService;
     }
 
     @Override
@@ -26,7 +31,7 @@ public class NavigateMessageEvent extends MessageEvent<NavigatorPlugin> {
         boolean hideFulLRooms = msg.pop(DataCodec.BOOL, Boolean.class);
         int categoryId = msg.pop(DataCodec.VL64_INT, Integer.class);
 
-        var navigatorCategoryOpt = this.getPlugin().getNavigatorManager().getNavigatorCategories().stream()
+        var navigatorCategoryOpt = this.navigatorService.getCategories().stream()
                 .filter(x -> x.getId() == categoryId)
                 .findFirst();
 
@@ -40,7 +45,7 @@ public class NavigateMessageEvent extends MessageEvent<NavigatorPlugin> {
             return;
         }
 
-        List<RoomData> roomList = this.getPlugin().getNavigatorManager().getRoomsByCategory(navigatorCategory.getId());
+        List<RoomData> roomList = this.roomService.getRoomsByCategory(navigatorCategory.getId());
         var isPublicRoomCategory = this.getPlugin().getNavigatorManager().isPublicRoomCategory(navigatorCategory.getId());
 
         var codec = PacketCodec.create(220)
@@ -92,7 +97,7 @@ public class NavigateMessageEvent extends MessageEvent<NavigatorPlugin> {
             }
         }
 
-        var subCategories = this.getPlugin().getNavigatorManager().getNavigatorCategories().stream()
+        var subCategories = this.navigatorService.getCategories().stream()
                 .filter(x -> x.getParentId() == navigatorCategory.getId() &&
                         playerData.getRank() >= x.getRankId())
                 .toList();
@@ -108,5 +113,10 @@ public class NavigateMessageEvent extends MessageEvent<NavigatorPlugin> {
         }
 
         codec.send(player);
+    }
+
+    @Override
+    public int getHeaderId() {
+        return 150;
     }
 }

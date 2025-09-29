@@ -10,11 +10,6 @@ import net.h4bbo.echo.storage.models.user.UserData;
 
 public class GetCreditsMessageEvent extends MessageEvent<NavigatorPlugin> {
     @Override
-    public int getHeaderId() {
-        return 8;
-    }
-
-    @Override
     public void handle(IPlayer player, IClientCodec msg) {
         var user = player.attr(UserData.DATA_KEY).get();
 
@@ -22,4 +17,10 @@ public class GetCreditsMessageEvent extends MessageEvent<NavigatorPlugin> {
                 .append(DataCodec.BYTES, user.getCredits())
                 .send(player);
     }
+
+    @Override
+    public int getHeaderId() {
+        return 8;
+    }
+
 }

@@ -4,6 +4,7 @@ import net.h4bbo.echo.api.game.player.IPlayer;
 import net.h4bbo.echo.api.messages.MessageEvent;
 import net.h4bbo.echo.api.network.codecs.DataCodec;
 import net.h4bbo.echo.api.network.codecs.IClientCodec;
+import net.h4bbo.echo.api.services.room.IRoomService;
 import net.h4bbo.echo.codecs.PacketCodec;
 import net.h4bbo.echo.plugin.navigator.NavigatorPlugin;
 import net.h4bbo.echo.storage.models.room.RoomData;
@@ -12,9 +13,10 @@ import net.h4bbo.echo.storage.models.user.UserData;
 import java.util.List;
 
 public class SearchFlatsMessageEvent extends MessageEvent<NavigatorPlugin> {
-    @Override
-    public int getHeaderId() {
-        return 17;
+    private final IRoomService roomService;
+
+    public SearchFlatsMessageEvent(IRoomService roomService) {
+        this.roomService = roomService;
     }
 
     @Override
@@ -22,7 +24,7 @@ public class SearchFlatsMessageEvent extends MessageEvent<NavigatorPlugin> {
         var playerData = player.attr(UserData.DATA_KEY).get();
         var stringQuery = msg.pop(DataCodec.STRING, String.class);
 
-        List<RoomData> roomList = this.getPlugin().getNavigatorManager().searchRooms(stringQuery);
+        List<RoomData> roomList = this.roomService.search(stringQuery);
 
         if (roomList.isEmpty()) {
             PacketCodec.create(58)
@@ -57,5 +59,10 @@ public class SearchFlatsMessageEvent extends MessageEvent<NavigatorPlugin> {
         }
 
         codec.send(player);
+    }
+
+    @Override
+    public int getHeaderId() {
+        return 17;
     }
 }

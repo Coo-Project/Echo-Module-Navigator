@@ -10,11 +10,6 @@ import net.h4bbo.echo.storage.models.user.UserData;
 
 public class UserInfoMessageEvent extends MessageEvent<NavigatorPlugin> {
     @Override
-    public int getHeaderId() {
-        return 7;
-    }
-
-    @Override
     public void handle(IPlayer player, IClientCodec msg) {
         var user = player.attr(UserData.DATA_KEY).get();
 
@@ -29,5 +24,10 @@ public class UserInfoMessageEvent extends MessageEvent<NavigatorPlugin> {
                 .append(DataCodec.VL64_INT, user.getFilm())
                 .append(DataCodec.BOOL, user.isDirectMail())
                 .send(player);
+    }
+
+    @Override
+    public int getHeaderId() {
+        return 7;
     }
 }
