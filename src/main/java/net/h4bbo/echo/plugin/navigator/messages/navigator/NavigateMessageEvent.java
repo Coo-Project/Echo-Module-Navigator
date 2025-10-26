@@ -28,8 +28,8 @@ public class NavigateMessageEvent extends MessageEvent<NavigatorPlugin> {
     public void handle(IPlayer player, IClientCodec msg) {
         var playerData = player.attr(UserData.DATA_KEY).get();
 
-        boolean hideFulLRooms = msg.pop(DataCodec.BOOL, Boolean.class);
-        int categoryId = msg.pop(DataCodec.VL64_INT, Integer.class);
+        boolean hideFulLRooms = msg.get(DataCodec.BOOL);
+        int categoryId = msg.get(DataCodec.VL64_INT);
 
         var navigatorCategoryOpt = this.navigatorService.getCategories().stream()
                 .filter(x -> x.getId() == categoryId)

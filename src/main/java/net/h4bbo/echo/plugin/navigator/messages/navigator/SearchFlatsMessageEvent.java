@@ -22,7 +22,7 @@ public class SearchFlatsMessageEvent extends MessageEvent<NavigatorPlugin> {
     @Override
     public void handle(IPlayer player, IClientCodec msg) {
         var playerData = player.attr(UserData.DATA_KEY).get();
-        var stringQuery = msg.pop(DataCodec.STRING, String.class);
+        String stringQuery = msg.get(DataCodec.STRING);
 
         List<RoomData> roomList = this.roomService.search(stringQuery);
 
