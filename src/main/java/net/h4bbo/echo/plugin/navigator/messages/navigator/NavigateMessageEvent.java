@@ -1,6 +1,7 @@
 package net.h4bbo.echo.plugin.navigator.messages.navigator;
 
 import net.h4bbo.echo.api.game.player.IPlayer;
+import net.h4bbo.echo.api.game.room.RoomConsts;
 import net.h4bbo.echo.api.messages.MessageEvent;
 import net.h4bbo.echo.api.network.codecs.DataCodec;
 import net.h4bbo.echo.api.network.codecs.IClientCodec;
@@ -11,8 +12,6 @@ import net.h4bbo.echo.plugin.navigator.NavigatorPlugin;
 import net.h4bbo.echo.storage.models.room.RoomData;
 import net.h4bbo.echo.storage.models.user.UserData;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class NavigateMessageEvent extends MessageEvent<NavigatorPlugin> {
@@ -47,7 +46,7 @@ public class NavigateMessageEvent extends MessageEvent<NavigatorPlugin> {
 
         List<RoomData> roomList = this.roomService.getRoomsByCategory(navigatorCategory.getId());
         var isPublicRoomCategory = this.getPlugin().getNavigatorManager().isPublicRoomCategory(navigatorCategory.getId());
-
+        
         var codec = PacketCodec.create(220)
                 .append(DataCodec.BOOL, hideFulLRooms)
                 .append(DataCodec.VL64_INT, navigatorCategory.getId())
@@ -73,7 +72,7 @@ public class NavigateMessageEvent extends MessageEvent<NavigatorPlugin> {
                 }
 
                 codec = codec
-                        .append(DataCodec.VL64_INT, room.getId())
+                        .append(DataCodec.VL64_INT, room.getId() + RoomConsts.PUBLIC_ROOM_OFFSET)
                         .append(DataCodec.VL64_INT, 1)
                         .append(DataCodec.STRING, room.getName())
                         .append(DataCodec.VL64_INT, room.getVisitorsNow())
